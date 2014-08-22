@@ -1,0 +1,10 @@
+block.locksmith_lock.name=Lock
+block.locksmith_key.name=Key
+block.blocklocksmithworkbench.name=Locksmith Workbench
+block.blockwoodcabinet.name=Wood Cabinet
+block.blockglasscabinet.name=Glass Cabinet
+block.blockwarehousecrate.name=Crate
+block.blockobsidiansafe.name=\u00a75Obsidian Safe
+block.blockgoldsafe.name=\u00a76Gold Safe
+block.blocklocker.name=Locker
+block.blockitemtower.name=Item Tower

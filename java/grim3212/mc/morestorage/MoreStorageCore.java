@@ -81,9 +81,6 @@ public class MoreStorageCore extends GrimModule {
 	public static final String modVersion = "V0.1 - " + Reference.MC_VERSION;
 	public static final String modURL = "http://grim3212.wikispaces.com/More+Storage";
 
-	private static VersionChecker versionChecker;
-	public static boolean canVersionCheck = true;
-
 	public static Item ItemLocksmithLock;
 	public static Item ItemLocksmithKey;
 	public static Block BlockLocksmithWorkbench;
@@ -173,12 +170,6 @@ public class MoreStorageCore extends GrimModule {
 
 	@EventHandler
 	public void Init(FMLInitializationEvent event) {
-		FMLCommonHandler.instance().bus().register(this);
-
-		if (Grim3212Core.doUpdateCheck) {
-			versionChecker = new VersionChecker(this.modName, this.modVersion, versionUrl, this.modURL);
-			versionChecker.checkVersionWithLoggingBySubStringAsFloat(1, 4);
-		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -192,24 +183,6 @@ public class MoreStorageCore extends GrimModule {
 		ClientRegistry.registerTileEntity(TileEntityGoldSafe.class, "MoreStorageGoldsafe", new TileEntityGoldSafeRenderer());
 		ClientRegistry.registerTileEntity(TileEntityLocker.class, "MoreStorageLocker", new TileEntityLockerRenderer());
 		ClientRegistry.registerTileEntity(TileEntityItemTower.class, "MoreStorageItemTower", new TileEntityItemTowerRenderer());
-	}
-
-	@SubscribeEvent
-	public void tick(ClientTickEvent event) {
-		if (FMLClientHandler.instance().getClient().currentScreen == null) {
-			if (Grim3212Core.doUpdateCheck && this.canVersionCheck) {
-				if (!versionChecker.isCurrentVersionBySubStringAsFloatNewer(1, 4)) {
-					for (String msg : versionChecker.getInGameMessage())
-						FMLClientHandler.instance().getClient().ingameGUI.getChatGUI().printChatMessage(new ChatComponentText(msg));
-					this.canVersionCheck = false;
-				}
-			}
-		}
-	}
-
-	@Override
-	public String getModID() {
-		return MoreStorageCore.modID;
 	}
 
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {

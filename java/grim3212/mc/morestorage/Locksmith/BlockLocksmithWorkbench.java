@@ -22,7 +22,7 @@ public class BlockLocksmithWorkbench extends Block {
 
 	public BlockLocksmithWorkbench() {
 		super(Material.wood);
-		setCreativeTab(Grim3212Core.tabsGrimBlocks);
+		setCreativeTab(Grim3212Core.tabGrimStuff);
 	}
 
 	@SideOnly(Side.CLIENT)

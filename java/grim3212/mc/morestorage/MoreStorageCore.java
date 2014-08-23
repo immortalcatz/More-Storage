@@ -2,9 +2,8 @@ package grim3212.mc.morestorage;
 
 import grim3212.mc.core.Grim3212Core;
 import grim3212.mc.core.GrimModule;
-import grim3212.mc.core.lib.Reference;
-import grim3212.mc.core.packet.PacketPipeline;
-import grim3212.mc.core.util.VersionChecker;
+import grim3212.mc.core.network.PacketDispatcher;
+import grim3212.mc.core.util.Reference;
 import grim3212.mc.morestorage.Cabinet.BlockGlassCabinet;
 import grim3212.mc.morestorage.Cabinet.BlockWoodCabinet;
 import grim3212.mc.morestorage.Cabinet.TileEntityGlassCabinet;
@@ -51,9 +50,7 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ChatComponentText;
 import net.minecraft.world.World;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -63,8 +60,6 @@ import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -107,13 +102,14 @@ public class MoreStorageCore extends GrimModule {
 		data.credits = "Thanks to ngphoenix for the original mod.";
 		data.logoFile = Reference.LOGOFILE;
 
-		PacketPipeline.registerPacket(MoreStoragePacket.class);
+		PacketDispatcher.registerMessage(MessageMoreStorage.class, MessageMoreStorage.class, Side.SERVER);
+
 		NetworkRegistry.INSTANCE.registerGuiHandler(instance, this);
 
-		boolean isClient = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
+		boolean isClient = event.getSide() == Side.CLIENT;
 
-		ItemLocksmithLock = new ItemCombination().setCreativeTab(Grim3212Core.tabsGrimItems).setUnlocalizedName("locksmith_lock");
-		ItemLocksmithKey = new ItemCombination().setCreativeTab(Grim3212Core.tabsGrimItems).setUnlocalizedName("locksmith_key");
+		ItemLocksmithLock = new ItemCombination().setCreativeTab(Grim3212Core.tabGrimStuff).setUnlocalizedName("locksmith_lock");
+		ItemLocksmithKey = new ItemCombination().setCreativeTab(Grim3212Core.tabGrimStuff).setUnlocalizedName("locksmith_key");
 		BlockLocksmithWorkbench = new BlockLocksmithWorkbench().setStepSound(Block.soundTypeWood).setHardness(3.0F).setResistance(5.0F).setBlockName("blocklocksmithworkbench");
 		BlockWoodCabinet = new BlockWoodCabinet(Material.wood).setStepSound(Block.soundTypeWood).setHardness(3.0F).setResistance(5.0F).setBlockName("blockwoodcabinet").setBlockTextureName("log_oak");
 		BlockGlassCabinet = new BlockGlassCabinet(Material.wood).setStepSound(Block.soundTypeWood).setHardness(3.0F).setResistance(5.0F).setBlockName("blockglasscabinet").setBlockTextureName("glass");
@@ -134,17 +130,18 @@ public class MoreStorageCore extends GrimModule {
 		GameRegistry.registerBlock(BlockLocker, "Locker");
 		GameRegistry.registerBlock(BlockItemTower, "ItemTower");
 
-		GameRegistry.addRecipe(new ItemStack(ItemLocksmithLock, 3, 0), new Object[] { " I ", "I I", "III", Character.valueOf('I'), Items.iron_ingot });
-		GameRegistry.addRecipe(new ItemStack(ItemLocksmithKey, 3, 0), new Object[] { "II", "II", "I ", Character.valueOf('I'), Items.gold_ingot });
-		GameRegistry.addRecipe(new ItemStack(BlockLocksmithWorkbench, 1, 0), new Object[] { "L", "K", "W", Character.valueOf('L'), ItemLocksmithLock, Character.valueOf('K'), ItemLocksmithKey, Character.valueOf('W'), Blocks.crafting_table });
-		GameRegistry.addRecipe(new ItemStack(BlockLocksmithWorkbench, 1, 0), new Object[] { "K", "L", "W", Character.valueOf('L'), ItemLocksmithLock, Character.valueOf('K'), ItemLocksmithKey, Character.valueOf('W'), Blocks.crafting_table });
-		GameRegistry.addRecipe(new ItemStack(BlockWoodCabinet, 1, 0), new Object[] { " X ", "XCX", " X ", Character.valueOf('X'), Blocks.planks, Character.valueOf('C'), Blocks.chest });
-		GameRegistry.addRecipe(new ItemStack(BlockGlassCabinet, 1, 0), new Object[] { " X ", "GCG", " X ", Character.valueOf('X'), Blocks.planks, Character.valueOf('C'), Blocks.chest, Character.valueOf('G'), Blocks.glass });
-		GameRegistry.addRecipe(new ItemStack(BlockWarehouseCrate, 1, 0), new Object[] { "LLL", "P P", "PPP", Character.valueOf('P'), Blocks.planks, Character.valueOf('L'), Blocks.log });
-		GameRegistry.addRecipe(new ItemStack(BlockObsidianSafe, 1, 0), new Object[] { " X ", "XCX", " X ", Character.valueOf('X'), Blocks.obsidian, Character.valueOf('C'), Blocks.chest });
-		GameRegistry.addRecipe(new ItemStack(BlockGoldSafe, 1, 0), new Object[] { " G ", "GIG", " G ", Character.valueOf('I'), BlockObsidianSafe, Character.valueOf('G'), Items.gold_ingot });
-		GameRegistry.addRecipe(new ItemStack(BlockLocker, 1, 0), new Object[] { " X ", "XCX", " X ", Character.valueOf('X'), Items.iron_ingot, Character.valueOf('C'), Blocks.chest });
-		GameRegistry.addRecipe(new ItemStack(BlockItemTower, 4, 0), new Object[] { "I I", "ICI", "I I", Character.valueOf('I'), Items.iron_ingot, Character.valueOf('C'), Blocks.chest });
+		// Use OreDictionary
+		GameRegistry.addRecipe(new ItemStack(ItemLocksmithLock, 3, 0), new Object[] { " I ", "I I", "III", 'I', Items.iron_ingot });
+		GameRegistry.addRecipe(new ItemStack(ItemLocksmithKey, 3, 0), new Object[] { "II", "II", "I ", 'I', Items.gold_ingot });
+		GameRegistry.addRecipe(new ItemStack(BlockLocksmithWorkbench, 1, 0), new Object[] { "L", "K", "W", 'L', ItemLocksmithLock, 'K', ItemLocksmithKey, 'W', Blocks.crafting_table });
+		GameRegistry.addRecipe(new ItemStack(BlockLocksmithWorkbench, 1, 0), new Object[] { "K", "L", "W", 'L', ItemLocksmithLock, 'K', ItemLocksmithKey, 'W', Blocks.crafting_table });
+		GameRegistry.addRecipe(new ItemStack(BlockWoodCabinet, 1, 0), new Object[] { " X ", "XCX", " X ", 'X', Blocks.planks, 'C', Blocks.chest });
+		GameRegistry.addRecipe(new ItemStack(BlockGlassCabinet, 1, 0), new Object[] { " X ", "GCG", " X ", 'X', Blocks.planks, 'C', Blocks.chest, 'G', Blocks.glass });
+		GameRegistry.addRecipe(new ItemStack(BlockWarehouseCrate, 1, 0), new Object[] { "LLL", "P P", "PPP", 'P', Blocks.planks, 'L', Blocks.log });
+		GameRegistry.addRecipe(new ItemStack(BlockObsidianSafe, 1, 0), new Object[] { " X ", "XCX", " X ", 'X', Blocks.obsidian, 'C', Blocks.chest });
+		GameRegistry.addRecipe(new ItemStack(BlockGoldSafe, 1, 0), new Object[] { " G ", "GIG", " G ", 'I', BlockObsidianSafe, 'G', Items.gold_ingot });
+		GameRegistry.addRecipe(new ItemStack(BlockLocker, 1, 0), new Object[] { " X ", "XCX", " X ", 'X', Items.iron_ingot, 'C', Blocks.chest });
+		GameRegistry.addRecipe(new ItemStack(BlockItemTower, 4, 0), new Object[] { "I I", "ICI", "I I", 'I', Items.iron_ingot, 'C', Blocks.chest });
 
 		DefaultTileEntityMap.put(BlockWoodCabinet, BlockWoodCabinet.createTileEntity(null, 0));
 		DefaultTileEntityMap.put(BlockGlassCabinet, BlockGlassCabinet.createTileEntity(null, 0));
@@ -164,6 +161,7 @@ public class MoreStorageCore extends GrimModule {
 			GameRegistry.registerTileEntity(TileEntityLocker.class, "MoreStorageLocker");
 			GameRegistry.registerTileEntity(TileEntityItemTower.class, "MoreStorageItemTower");
 		}
+
 		if (isClient)
 			initClient();
 	}

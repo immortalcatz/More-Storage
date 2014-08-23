@@ -1,6 +1,6 @@
 package grim3212.mc.morestorage;
 
-import grim3212.mc.core.packet.PacketPipeline;
+import grim3212.mc.core.network.PacketDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -76,7 +76,7 @@ public class TileEntityStorage extends TileEntity implements IInventory {
 	}
 
 	public void sendStoragePassword() {
-		PacketPipeline.sendToServer(new MoreStoragePacket(xCoord, yCoord, zCoord, storagePassword, 2));
+		PacketDispatcher.sendToServer(new MessageMoreStorage(xCoord, yCoord, zCoord, storagePassword, 2));
 	}
 
 	public void setStoragePassword(int password) {
@@ -105,7 +105,7 @@ public class TileEntityStorage extends TileEntity implements IInventory {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) {
 			if ((!this.hasInitialData) && (this.hasInitialDataTimeout <= 0)) {
 
-				PacketPipeline.sendToServer(new MoreStoragePacket(xCoord, yCoord, zCoord, 1));
+				PacketDispatcher.sendToServer(new MessageMoreStorage(xCoord, yCoord, zCoord, 1));
 
 				this.hasInitialDataTimeout = 10;
 			}

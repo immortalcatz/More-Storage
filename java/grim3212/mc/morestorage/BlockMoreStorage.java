@@ -25,7 +25,7 @@ public class BlockMoreStorage extends BlockContainer {
 
 	public BlockMoreStorage(Material material) {
 		super(material);
-		setCreativeTab(Grim3212Core.tabsGrimBlocks);
+		setCreativeTab(Grim3212Core.tabGrimStuff);
 	}
 
 	public void onBlockPlacedBy(World world, int i, int j, int k, EntityLivingBase entityliving, ItemStack itemstack) {

@@ -1,9 +1,9 @@
 package grim3212.mc.morestorage.Locksmith;
 
-import grim3212.mc.core.packet.PacketPipeline;
+import grim3212.mc.core.network.PacketDispatcher;
 import grim3212.mc.morestorage.ItemCombination;
+import grim3212.mc.morestorage.MessageMoreStorage;
 import grim3212.mc.morestorage.MoreStorageCore;
-import grim3212.mc.morestorage.MoreStoragePacket;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -49,7 +49,7 @@ public class GuiLocksmithWorkbench extends GuiContainer {
 			if ((this.password.length() > 0) && (leftslot != null) && ((leftslot.getItem() instanceof ItemCombination))) {
 				this.mc.theWorld.playSoundEffect(1.0D, 1.0D, 1.0D, "random.wood_click", 1.0F, 1.0F);
 
-				PacketPipeline.sendToServer(new MoreStoragePacket(Integer.parseInt(this.password), 0));
+				PacketDispatcher.sendToServer(new MessageMoreStorage(Integer.parseInt(this.password), 0));
 			}
 		}
 	}

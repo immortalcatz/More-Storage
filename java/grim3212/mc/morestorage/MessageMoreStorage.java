@@ -60,35 +60,31 @@ public class MessageMoreStorage implements IMessage, IMessageHandler<MessageMore
 
 	@Override
 	public IMessage onMessage(MessageMoreStorage message, MessageContext ctx) {
-		try {
-			EntityPlayerMP entityplayer = (EntityPlayerMP) ctx.getServerHandler().playerEntity;
-			if (ID == 0) {
-				ItemStack oldstack = entityplayer.openContainer.getSlot(0).getStack();
-				if (entityplayer.openContainer.getSlot(1).getStack() == null) {
-					MoreStorageUtility.setCombination(oldstack, password);
-					entityplayer.openContainer.getSlot(1).putStack(oldstack);
-					entityplayer.openContainer.getSlot(0).putStack(null);
-				}
+		EntityPlayerMP entityplayer = (EntityPlayerMP) ctx.getServerHandler().playerEntity;
+		if (ID == 0) {
+			ItemStack oldstack = entityplayer.openContainer.getSlot(0).getStack();
+			if (entityplayer.openContainer.getSlot(1).getStack() == null) {
+				MoreStorageUtility.setCombination(oldstack, password);
+				entityplayer.openContainer.getSlot(1).putStack(oldstack);
+				entityplayer.openContainer.getSlot(0).putStack(null);
 			}
-			if (ID == 1) {
-				World world = entityplayer.worldObj;
-				TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
-				if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
-					TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
-					tileentitystorage.sendStoragePassword();
-				}
+		}
+		if (ID == 1) {
+			World world = entityplayer.worldObj;
+			TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
+			if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
+				TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
+				tileentitystorage.sendStoragePassword();
 			}
-			if (ID == 2) {
-				World world = entityplayer.worldObj;
-				TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
-				if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
-					TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
-					tileentitystorage.setStoragePassword(password);
-					tileentitystorage.hasInitialData = true;
-				}
+		}
+		if (ID == 2) {
+			World world = entityplayer.worldObj;
+			TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
+			if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
+				TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
+				tileentitystorage.setStoragePassword(password);
+				tileentitystorage.hasInitialData = true;
 			}
-		} catch (Exception e) {
-			System.out.println("Error while recieving locksmith crafting packet. SERVER.");
 		}
 		return null;
 	}

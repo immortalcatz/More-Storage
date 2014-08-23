@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class MoreStorageUtility {
+
 	public static void setCombination(ItemStack itemstack, int combo) {
 		NBTTagCompound c = itemstack.hasTagCompound() ? itemstack.getTagCompound() : new NBTTagCompound();
 		c.setInteger("combo", combo);

@@ -1,10 +1,11 @@
 package grim3212.mc.morestorage;
 
+import io.netty.buffer.ByteBuf;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import io.netty.buffer.ByteBuf;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
@@ -59,31 +60,37 @@ public class MessageMoreStorage implements IMessage, IMessageHandler<MessageMore
 	}
 
 	@Override
+	// TODO: Needs to be fixed
 	public IMessage onMessage(MessageMoreStorage message, MessageContext ctx) {
-		EntityPlayerMP entityplayer = (EntityPlayerMP) ctx.getServerHandler().playerEntity;
-		if (ID == 0) {
-			ItemStack oldstack = entityplayer.openContainer.getSlot(0).getStack();
-			if (entityplayer.openContainer.getSlot(1).getStack() == null) {
-				MoreStorageUtility.setCombination(oldstack, password);
-				entityplayer.openContainer.getSlot(1).putStack(oldstack);
-				entityplayer.openContainer.getSlot(0).putStack(null);
+		if (ctx.side.isServer()) {
+			EntityPlayerMP entityplayer = (EntityPlayerMP) ctx.getServerHandler().playerEntity;
+			if (ID == 0) {
+				ItemStack oldstack = entityplayer.openContainer.getSlot(0).getStack();
+				if (entityplayer.openContainer.getSlot(1).getStack() == null) {
+					// MoreStorageUtility.setCombination(oldstack, password);
+					entityplayer.openContainer.getSlot(1).putStack(oldstack);
+					entityplayer.openContainer.getSlot(0).putStack(null);
+				}
+			}
+			if (ID == 1) {
+				World world = entityplayer.worldObj;
+				TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
+				if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
+					TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
+					tileentitystorage.sendStoragePassword();
+				}
 			}
 		}
-		if (ID == 1) {
-			World world = entityplayer.worldObj;
-			TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
-			if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
-				TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
-				tileentitystorage.sendStoragePassword();
-			}
-		}
-		if (ID == 2) {
-			World world = entityplayer.worldObj;
-			TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
-			if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
-				TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
-				tileentitystorage.setStoragePassword(password);
-				tileentitystorage.hasInitialData = true;
+		if (ctx.side.isClient()) {
+			EntityPlayer entityplayer = (EntityPlayer) ctx.getServerHandler().playerEntity;
+			if (ID == 2) {
+				World world = entityplayer.worldObj;
+				TileEntity tileentity = world.getTileEntity(xCoord, yCoord, zCoord);
+				if ((tileentity != null) && ((tileentity instanceof TileEntityStorage))) {
+					TileEntityStorage tileentitystorage = (TileEntityStorage) tileentity;
+					tileentitystorage.setStoragePassword(password);
+					tileentitystorage.hasInitialData = true;
+				}
 			}
 		}
 		return null;

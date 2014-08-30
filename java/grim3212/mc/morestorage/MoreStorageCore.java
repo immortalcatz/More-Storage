@@ -71,7 +71,7 @@ public class MoreStorageCore extends GrimModule {
 	@Instance(MoreStorageCore.modID)
 	public static MoreStorageCore instance;
 
-	public static final String modID = "grim3212morestorage";
+	public static final String modID = "morestorage";
 	public static final String modName = "More Storage";
 	public static final String modVersion = "V0.1 - " + Reference.MC_VERSION;
 	public static final String modURL = "http://grim3212.wikispaces.com/More+Storage";
